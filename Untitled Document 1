@@ -1,0 +1,113 @@
+for search by status
+localhost:8085/internal/users/search?status=active
+
+for posting new user
+localhost:8085/users
+
+for getting user by id
+localhost:8085/users/
+
+for deleting user by id
+localhost:8085/users/
+
+for pathc/update user/put
+localhost:8085/users/
+
+
+json structure
+{
+    "first_name": "Robben",
+    "last_name": "Robin",
+    "email": "ribery@psv.com",
+    "status": "active",
+    "password" : "liverajaxl89"
+}
+
+
+{
+    "id":8,
+    "first_name": "Frank",
+    "last_name": "Lampard",
+    "email": "blues@gmail.com",
+    "status": "active",
+    "password" : "chelsea"
+}
+
+
+
+"UPDATE users SET first_name=?, last_name=?, email=?, status=?, password=? WHERE id=?;"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+userId, userErr := strconv.ParseInt(c.Param("user_id"), 10, 64)
+	if userErr != nil {
+		err := errors.NewBadRequestError("user id should be number")
+		c.JSON(err.Status, err)
+		return
+	}
+
+	var user users.User
+	if err := c.ShouldBindJSON(&user); err != nil {
+		restErr := errors.NewBadRequestError("invalid json body")
+		c.JSON(restErr.Status, restErr)
+		return
+	}
+
+	user.Id = userId
+	user.Password = crypto_utils.GetMd5(user.Password)
+	//isPartial := c.Request.Method == http.MethodPatch
+	result, err := services.UpdateUser(user)
+	if err != nil {
+		c.JSON(err.Status, result)
+	}
+	c.JSON(http.StatusOK, result.PMarshall(c.GetHeader("X-Public") == "true"))
+	c.JSON(http.StatusOK, map[string]string{"status": "updated"})
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+current, err := GetUser(user.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	current.Id = user.Id
+	current.FirstName = user.FirstName
+	current.LastName = user.LastName
+	current.Email = user.Email
+	current.Status = user.Status
+	current.Password = user.Password
+	fmt.Println("user:(service)", user)
+	fmt.Println("current:(service)", current)
+	if err := current.Update(); err != nil {
+		return nil, err
+	}
+	return current, nil	
